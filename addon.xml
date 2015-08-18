@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.animebaka"  name="AnimeBaka.TV" provider-name="skram" version="1.0.0">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.beautifulsoup"/>
+		<import addon="script.module.requests"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<language>en</language>
+		<summary lang="en">Watch Anime from AnimeBaka.TV!</summary>
+		<description lang="en">AnimeBaka.TV Description</description>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+		<website>http://www.animebaka.tv/</website>
+		<email></email>
+		<source></source>
+	</extension>
+</addon>
