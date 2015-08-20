@@ -5,14 +5,14 @@ Watch your favorite anime series streamed from http://animebaka.tv.
 
 To Install: Use Kodi's (XBMC) "Install From Zip" and select the "plugin.video.animebakatv-x.x.x.zip" contained in this repo.
 
-Please feel free to Fork & Pull to Contribute.
+Please feel free to Fork & Pull to Contribute. (Use the "dev" branch)
 
 
 LICENSE
 ========================
 The MIT License (MIT)
 
-Copyright (c) [2015] [Mark Peterson]
+Copyright (c) 2015 Mark Peterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
