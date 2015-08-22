@@ -11,19 +11,13 @@ import urllib2
 import os
 from BeautifulSoup import BeautifulSoup
 
-
 series_list = []
 _plugId = 'plugin.video.animebaka'
 ADDON = xbmcaddon.Addon(id=_plugId)
-base_url = sys.argv[0]
 addon_handle = int(sys.argv[1])
 args = urlparse.parse_qs(sys.argv[2][1:])
 mode = args.get('mode',None)
 
-
-
-#for arg in sys.argv:
-#    print 'ARG: '+arg
 
 class Episode(object):
 
@@ -41,6 +35,34 @@ class Series(object):
 		self.sub = sub
 		self.thumb = thumb
 		self.link = link
+
+
+def get_show_meta(name):
+	tvdb = xbmcaddon.Addon('script.module.metahandler')
+	__cwd__ = xbmc.translatePath(tvdb.getAddonInfo('path')).decode("utf-8")
+	BASE_RESOURCE_PATH = os.path.join(__cwd__, 'lib', 'metahandler')
+	sys.path.append(BASE_RESOURCE_PATH)
+	from thetvdbapi import TheTVDB
+	try:
+		tv = TheTVDB(language='jp')
+		show_list = tv.get_matching_shows(name)
+		print show_list
+		if len(show_list) > 0:
+			print show_list
+			show_id = show_list[0][0]
+			images = tv.get_show_image_choices(show_id)
+			for im in images:
+				if im[1] == 'fanart':
+					return im[0]
+					break
+		#print ('Found TV Show List: %s' % show_list, 0)
+	except Exception as e:
+		return None
+		print e
+
+	return None
+
+
 
 def parse_iframe_for_direct_video(src):
 	page = urllib2.urlopen(src)
@@ -87,9 +109,8 @@ def get_anime_from_page(pages):
 	
 		for episode in episodes:
 			title = remove_non_ascii_2(episode.find("div",{"itemprop":"partOfSeries"}).contents[0])
-			#print remove_non_ascii_2(title)
+
 			if any(x.title == title for x in list(series_list)) == True:
-				print 'Found Dupe'
 				break
 
 			thumb = episode.find("img",{"itemprop":"thumbnailUrl"})['src']
@@ -107,14 +128,6 @@ def get_anime_from_page(pages):
 			#parse_page_for_link(ser)
 			series_list.append(ser)
 
-def AddContextItem(li,name,script,arg):
-    commands = []
-    runner = "XBMC.RunScript(" + str(script)+ ", " + str(arg) + ")"
-    commands.append(( str(name), runner, ))
-    li.addContextMenuItems( commands )
-    print commands
-
-
 def get_episode_list(link,title):
 	headers = {'Referer' : 'http://animebaka.tv','Host':'animebaka.tv'}
 	page = urllib2.urlopen(link)
@@ -124,7 +137,6 @@ def get_episode_list(link,title):
 
 	if num_episodes == 1:
 		video_path = episodes[0].find("a",{"itemprop":"url"})['href']
-		print 'Video Path: '+video_path
 		parsed = parse_page_for_link('http://animebaka.tv'+video_path)
 		xbmc.executebuiltin("PlayMedia(%s)" % (parsed['video_url']))
 	else:
@@ -143,15 +155,27 @@ def get_episode_list(link,title):
 def main():
 	print args
 	if mode is None:
+
 		xbmcplugin.setContent(addon_handle,'movies')
 		get_anime_from_page(["http://animebaka.tv","http://animebaka.tv/?page=2","http://animebaka.tv/?page=3","http://animebaka.tv/?page=4","http://animebaka.tv/?page=5","http://animebaka.tv/?page=6","http://animebaka.tv/?page=7","http://animebaka.tv/?page=8","http://animebaka.tv/?page=9","http://animebaka.tv/?page=10"])
+		
 		for series in series_list:
 			url = 'plugin://%s/?mode=get_episodes&series=%s&link=%s' % (_plugId,series.title,series.link)
 			li = xbmcgui.ListItem(label=series.title+" "+series.sub,iconImage=series.thumb,path=url)
-			fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
-			li.setProperty('fanart_image',fanart)
+			fanart = get_show_meta(series.title)
+			if fanart is not None:
+				li.setProperty('fanart_image',fanart)
+			else:
+				fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
+				li.setProperty('fanart_image',fanart)
+
+			#fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
 			xbmcplugin.addDirectoryItem(handle=addon_handle,url=url,listitem=li,isFolder=True)
 		
+		
+		#if skin_used == 'skin.confluence':
+		#	xbmc.executebuiltin('Container.SetViewMode(512)')
+
 		xbmcplugin.endOfDirectory(addon_handle)
 
 	elif mode[0] == 'get_episodes':
