@@ -19,7 +19,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 import sys
 import xbmc
 import xbmcaddon
-from resources.lib import abtv
+from resources.lib import abtv2
 
 _plugId = 'plugin.video.animebaka'
 
@@ -33,6 +33,6 @@ __language__  = __settings__.getLocalizedString
 xbmc.log("[PLUGIN] '%s: version %s' initialized!" % (__plugin__, __version__))
 
 if __name__ == "__main__":
-    abtv.main()
+    abtv2.main()
 
 sys.modules.clear()
